@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "349805057265",
+    "project_id": "flimmer2023-694c8",
+    "storage_bucket": "flimmer2023-694c8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:349805057265:android:b5b6b446d4f30f68934550",
+        "android_client_info": {
+          "package_name": "com.example.flimmer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "349805057265-1lk3t591qnt2u4one0qnddvaocmth4ar.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9-0Cue4Di3kBylpLHS_eCLvoppB1jjwc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "349805057265-1lk3t591qnt2u4one0qnddvaocmth4ar.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
