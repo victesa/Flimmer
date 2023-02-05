@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.flimmer.R
+import com.example.flimmer.authFeat.AuthFirebase
 import com.example.flimmer.ui.theme.appGreen
 import com.example.flimmer.ui.theme.bg
 import com.example.flimmer.ui.theme.btnStroke
@@ -81,8 +82,8 @@ class SignUp {
                         .fillMaxWidth()
                         .padding(top = 10.dp)) {
                         PNumberEditText(label)
-                        PasswordEditText(label = "Password") }
-                    PasswordEditText(label = "Confirm Password")
+                        AuthFirebase().password1 = passwordEditText(label = "Password") }
+                    AuthFirebase().password2 = passwordEditText(label = "Confirm Password")
                 }
 
                 //Implement btn functionality later
@@ -146,7 +147,7 @@ class SignUp {
     }
 
     @Composable
-    fun PasswordEditText(label: String){
+    fun passwordEditText(label: String): String {
         var text by remember{ mutableStateOf("") }
         var isVissible by remember{ mutableStateOf(false) }
 
@@ -170,6 +171,8 @@ class SignUp {
         }else{
             PasswordVisualTransformation()
         })
+
+        return text
     }
 
     @Composable
