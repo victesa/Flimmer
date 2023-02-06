@@ -1,25 +1,23 @@
 package com.example.flimmer.authFeat.signUp
 
-import Navigation.Routes
-import android.widget.EditText
-import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
+import android.content.ContentValues.TAG
+import android.content.DialogInterface
+import android.util.Log
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -29,23 +27,28 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.flimmer.R
-import com.example.flimmer.authFeat.AuthFirebase
+import com.example.flimmer.authFeat.AuthViewModal
 import com.example.flimmer.ui.theme.appGreen
 import com.example.flimmer.ui.theme.bg
-import com.example.flimmer.ui.theme.btnStroke
-import com.example.flimmer.ui.theme.loginBtn
 
 class SignUp {
+    private var label = ""
+    private var keyBoardInputTType: KeyboardType? = null
 
     @Composable
     fun SignUpScreen(btnPressed: String, navController: NavController){
-        var label = ""
+
         if (btnPressed == "Phone"){
             label = "Phone Number"
+             keyBoardInputTType = KeyboardType.Number
         }else{
             label = "Email Address"
+            keyBoardInputTType = KeyboardType.Email
         }
         Card(modifier = Modifier
             .fillMaxSize()
@@ -81,16 +84,15 @@ class SignUp {
                     Column(modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 10.dp)) {
-                        PNumberEditText(label)
-                        AuthFirebase().password1 = passwordEditText(label = "Password") }
-                    AuthFirebase().password2 = passwordEditText(label = "Confirm Password")
+                    }
+                    PNumberEditText(label = label, keyBoard = keyBoardInputTType!!)
+                    PasswordsWditText()
+
                 }
 
                 //Implement btn functionality later
                 item {
-                    BtnSignUp {
-                        navController.navigate(Routes.NumberAuthentication.route)
-                    }
+                    BtnSignUp (navController)
                 }
 
                 item {
@@ -137,47 +139,118 @@ class SignUp {
 
 
     @Composable
-    fun PNumberEditText(label: String){
-        var text by remember{ mutableStateOf("") }
-        OutlinedTextField(value = text, onValueChange = {
-            text = it}, textStyle = TextStyle(color = Color.Black), colors = TextFieldDefaults.outlinedTextFieldColors(backgroundColor = Color.White) ,shape = RoundedCornerShape(10.dp),
+    fun PNumberEditText(label: String, keyBoard: KeyboardType){
+        val viewModal = viewModel(AuthViewModal()::class.java)
+        val email = viewModal.email.collectAsState()
+        val phoneNumber = viewModal.phoneNumber.collectAsState()
+
+        val value = if (label == "Email"){
+            email.value
+        }else{
+            phoneNumber.value
+        }
+
+
+
+        OutlinedTextField(value = value,
+            onValueChange = {if (value == email.value){viewModal.setEmail(it)}else{viewModal.setPhoneNumer(it)} }
+            , textStyle = TextStyle(color = Color.Black),
+            colors = TextFieldDefaults.outlinedTextFieldColors(backgroundColor = Color.White) ,
+            shape = RoundedCornerShape(10.dp),
         label = {Text(text = label, color = Color.Gray)}, modifier = Modifier.fillMaxWidth(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        keyboardOptions = KeyboardOptions(keyboardType = keyBoard )
         )
     }
 
+
     @Composable
-    fun passwordEditText(label: String): String {
-        var text by remember{ mutableStateOf("") }
-        var isVissible by remember{ mutableStateOf(false) }
+    fun PasswordsWditText(){
+        val viewModal = viewModel(modelClass = AuthViewModal::class.java)
+        val password = viewModal.password.collectAsState()
+        var vissibilityDrawable_1 by remember {
+            mutableStateOf(R.drawable.ic_baseline_visibility_24)
+        }
+        var vissibilityDrawable_2 by remember {
+            mutableStateOf(R.drawable.ic_baseline_visibility_24)
+        }
+        val confirmPassword = viewModal.confirmPassword.collectAsState()
+        var isVissible1 by remember {
+            mutableStateOf(false)
+        }
 
-        var icon = if (isVissible){
-            painterResource(id = R.drawable.ic_baseline_visibility_24)
-        }else{
-            painterResource(id = R.drawable.ic_baseline_visibility_off_24)
-
+        var isVissible2 by remember {
+            mutableStateOf(false)
         }
         OutlinedTextField(modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 10.dp), textStyle = TextStyle(color = Color.Black), shape = RoundedCornerShape(10.dp), colors = TextFieldDefaults.outlinedTextFieldColors(backgroundColor = Color.White), value = text, onValueChange = { text = it },
-        label = { Text(text = label, color = Color.Gray)},
+            .padding(top = 10.dp), textStyle = TextStyle(color = Color.Black), shape = RoundedCornerShape(10.dp), colors = TextFieldDefaults.outlinedTextFieldColors(backgroundColor = Color.White),
+            value = password.value , onValueChange = {viewModal.setPassword(it)},
+            label = { Text(text = "Password", color = Color.Gray)},
             trailingIcon = {
-                IconButton(onClick = { isVissible = !isVissible }) {
-                    Icon(painter = icon, contentDescription = "visibility")
+                IconButton(onClick = { isVissible1 = !isVissible1 }) {
+                    vissibilityDrawable_1 = if (!isVissible1){
+                        R.drawable.ic_baseline_visibility_off_24
+                    }else{
+                        R.drawable.ic_baseline_visibility_24
+                    }
+                    Icon(painter = painterResource(id = vissibilityDrawable_1), contentDescription = "visibility")
                 }
             }
-        , visualTransformation = if (isVissible){
-            VisualTransformation.None
-        }else{
-            PasswordVisualTransformation()
-        })
+            , visualTransformation = if (isVissible1){
+                VisualTransformation.None
+            }else{
+                PasswordVisualTransformation()
+            })
 
-        return text
+        OutlinedTextField(modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 10.dp), textStyle = TextStyle(color = Color.Black), shape = RoundedCornerShape(10.dp), colors = TextFieldDefaults.outlinedTextFieldColors(backgroundColor = Color.White),
+            value = confirmPassword.value, onValueChange = {viewModal.setConfirmPassword(it) },
+            label = { Text(text = "Confirm Password", color = Color.Gray)},
+            trailingIcon = {
+                IconButton(onClick = { isVissible2 = !isVissible2 }) {
+                    vissibilityDrawable_2 = if (!isVissible2){
+                        R.drawable.ic_baseline_visibility_off_24
+                    }else{
+                        R.drawable.ic_baseline_visibility_24
+                    }
+                    Icon(painter = painterResource(id = vissibilityDrawable_2), contentDescription = "visibility")
+                }
+            }
+            , visualTransformation = if (isVissible2){
+                VisualTransformation.None
+            }else{
+                PasswordVisualTransformation()
+            })
     }
 
     @Composable
-    fun BtnSignUp(onClick: () -> Unit){
-        Button(onClick =onClick, modifier = Modifier
+    fun ProgressDialog(state: Boolean){
+        Dialog(onDismissRequest = {},
+        DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+        ) {
+            Box(modifier = Modifier
+                .size(100.dp)
+                .background(Color.White, shape = RoundedCornerShape(10.dp))){
+                Column {
+                    CircularProgressIndicator(modifier = Modifier.padding(start = 6.dp))
+                    Text(text = "Signing In", modifier = Modifier.padding(top = 8.dp))
+                }
+            }
+        }
+    }
+
+
+    @Composable
+    fun BtnSignUp( navController: NavController){
+        var context = LocalContext.current
+        var state = false
+        var viewModal = viewModel(AuthViewModal::class.java)
+        Button(onClick ={
+            state = true
+            viewModal.registerUser(context)
+            state = false
+        }, modifier = Modifier
             .fillMaxWidth()
             .padding(top = 30.dp)
         , shape = RoundedCornerShape(10.dp)
@@ -186,6 +259,7 @@ class SignUp {
             Text(text = "Create account", fontSize = 20.sp, fontWeight = FontWeight.SemiBold, color = Color.Black
             , modifier = Modifier.padding(10.dp))
         }
+        ProgressDialog(state = state)
     }
 
     @Composable

@@ -5,7 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
-import com.example.flimmer.authFeat.signIn.Alternative
+import com.example.flimmer.authFeat.signUp.Alternative
 import com.example.flimmer.authFeat.signIn.SignIn
 import com.example.flimmer.authFeat.signUp.NumberAuthentication
 import com.example.flimmer.authFeat.signUp.SignUp

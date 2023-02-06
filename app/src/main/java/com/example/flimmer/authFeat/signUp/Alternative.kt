@@ -1,4 +1,4 @@
-package com.example.flimmer.authFeat.signIn
+package com.example.flimmer.authFeat.signUp
 
 import Navigation.Routes
 import android.content.ContentValues.TAG
@@ -28,7 +28,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.flimmer.R
-import com.example.flimmer.authFeat.ViewModal
+import com.example.flimmer.authFeat.AuthViewModal
 import com.example.flimmer.ui.theme.bg
 import org.w3c.dom.Text
 
@@ -36,7 +36,7 @@ class Alternative {
 
     @Composable
     fun AlternativeScreen(navController: NavController){
-        var viewModel: ViewModal = viewModel()
+        var viewModel: AuthViewModal = viewModel()
         Column(modifier = Modifier
             .fillMaxSize()
             .padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -46,7 +46,7 @@ class Alternative {
     }
 
     @Composable
-    fun CardView(navController: NavController, viewModel: ViewModal){
+    fun CardView(navController: NavController, viewModel: AuthViewModal){
         Card(modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(0.85f), backgroundColor = bg, shape = RoundedCornerShape(32.dp)
@@ -66,11 +66,9 @@ class Alternative {
                 Spacer(modifier = Modifier.height(20.dp))
                 AlternativeButtons(painter = painterResource(id = R.drawable.phone), text = "continue with Phone",
                     onClick = { navController.navigate("${Routes.SignUp.route}/Phone")
-
-                    viewModel.btnPressed = "Phone"})
+                    })
                 AlternativeButtons(painter = painterResource(id = R.drawable.email), text = "continue with Email",
-                    onClick = {navController.navigate("${Routes.SignUp.route}/Email")
-                    viewModel.btnPressed = "Email"})
+                    onClick = {navController.navigate("${Routes.SignUp.route}/Email") })
                 AlternativeButtons(painter = painterResource(id = R.drawable.facebook_logo), text = "continue with facebook",
                 onClick = {})
 
